@@ -245,11 +245,14 @@ module Capybara
       class TextInput < Settable
         def set(value, **options)
           text = value.to_s
+          @element.dispatch_event('keydown')
           if text.end_with?("\n")
             @element.fill(text[0...-1], timeout: @timeout)
+            @element.dispatch_event('keyup')
             @element.press('Enter', timeout: @timeout)
           else
             @element.fill(text, timeout: @timeout)
+            @element.dispatch_event('keyup')
           end
         rescue ::Playwright::TimeoutError
           raise if @element.editable?
